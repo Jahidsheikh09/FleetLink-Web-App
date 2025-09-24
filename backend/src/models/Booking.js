@@ -1,0 +1,18 @@
+import mongoose from 'mongoose';
+
+const bookingSchema = new mongoose.Schema(
+  {
+    vehicleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle', required: true },
+    fromPincode: { type: String, required: true },
+    toPincode: { type: String, required: true },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
+    customerId: { type: String, required: true }
+  },
+  { timestamps: true }
+);
+
+bookingSchema.index({ vehicleId: 1, startTime: 1, endTime: 1 });
+
+export const Booking = mongoose.model('Booking', bookingSchema);
+
