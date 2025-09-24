@@ -13,9 +13,17 @@ export async function setupTestDb() {
       process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/fleetlink-test';
     }
   } else {
-    mongoServer = await MongoMemoryServer.create({ binary: { version: '7.0.14' } });
-    const uri = mongoServer.getUri('fleetlink-test');
-    process.env.MONGODB_URI = uri;
+    try {
+      mongoServer = await MongoMemoryServer.create({ binary: { version: '7.0.14' } });
+      const uri = mongoServer.getUri('fleetlink-test');
+      process.env.MONGODB_URI = uri;
+    } catch (err) {
+      // Fallback to local Mongo when download fails (no internet / blocked)
+      usingLocalMongo = true;
+      if (!process.env.MONGODB_URI) {
+        process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/fleetlink-test';
+      }
+    }
   }
 
   await connectToDatabase();
